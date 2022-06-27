@@ -1,12 +1,16 @@
 const canvas = document.getElementById("jsCanvas");
     //캔버스에 pixel modifier 사이즈 주기
-    canvas.width = 700;
-    canvas.height = 700;
+    const CANVAS_SIZE = 700;
+    canvas.width = CANVAS_SIZE;
+    canvas.height = CANVAS_SIZE;
 
 //Context는 canvas안에서 픽셀을 다룸
 const ctx = canvas.getContext("2d");
+const INITIAL_COLOR = "#2c2c2c";
+    //채우는 색상
+    ctx.fillStyle = "INITIAL_COLOR";
     //그려지는 선 색상
-    ctx.strokeStyle = "#2c2c2c";
+    ctx.strokeStyle = "INITIAL_COLOR";
     //그려지는 선의 너비
     ctx.lineWidth = 2.5;
 
@@ -51,23 +55,85 @@ if(canvas){
     canvas.addEventListener("mouseup", stopPainting);
     //4.캔버스에서 마우스가 벗어났을 때
     canvas.addEventListener("mouseleave", stopPainting);
+    //5.캔버스를 클릭했을 때 캔버스 채우기
+    canvas.addEventListener("click", handleCanvasClick);
 };
 
 
 
 
 
-//색상 바꾸기
+//// 색상 바꾸기
 function handleColorClick(event){
     //target -> 이벤트가 발생한 요소에 대한 속성 값을 얻음
-    // console.log(event.target.style.backgroundColor);
+    //console.log(event.target.style.backgroundColor);
     const ChangeColor = event.target.style.backgroundColor;
     ctx.strokeStyle = ChangeColor;
+    //fill모드 색상도 변경 시켜주기
+    ctx.fillStyle = ChangeColor;
 };
-
 
 const colors = document.getElementsByClassName("jsColor");
 //Array.from() -> object를 array로 변경해줌
 //colors를 배열로 변경
 //각각의 배열에 대하여 클릭이벤트 실행
 Array.from(colors).forEach(item => item.addEventListener("click", handleColorClick));
+
+
+
+
+
+//// 브러쉬 사이즈 바꾸기
+const range = document.getElementById("jsRange");
+
+function handleRangeChange(event){
+    //console.log(event.target.value);
+    const ChangeSize = event.target.value;
+    ctx.lineWidth = ChangeSize;
+};
+
+if(range){
+    range.addEventListener("input", handleRangeChange);
+};
+
+
+
+
+
+//// fill, paint 모드
+const mode = document.getElementById("jsMode");
+let filling = false;
+
+function handleModeClick(){
+    //FILL(true)   PAINT(false)
+    //FILL버전 -> PAINT버전
+    if(filling === true){               //클릭할때 true(FILL)상태라면
+        filling = false;                //false(PAINT)버전으로 변경
+        mode.innerText = "FILL";        //FILL버전으로 넘어가기 위한 텍스트
+    //PANIT버전 -> FILL버전
+    } else {                            //클릭할때 false(PAINT)상태라면
+        filling = true;                 //true(FILL)버전으로 변경
+        mode.innerText = "PAINT";       //PAINT버전으로 넘어가기 위한 텍스트
+    }; 
+};
+
+if(mode){
+    mode.addEventListener("click", handleModeClick);
+};
+
+
+
+
+
+//FILL모드 상태일때 캔버스에 색상 채우기
+function handleCanvasClick(){   //Canvas를 클릭했을 때 
+    if(filling === true){       //filling이 true이면 (=FILL버전이면)
+        ctx.fillRect(0, 0, CANVAS_SIZE, CANVAS_SIZE);
+    };
+};
+
+//ctx.fillRect(x, y, width, height);
+//            (x, y)위치에 width와 height 사이즈로 색칠된 사각형을 그림
+
+//ctx.fillStyle = "color";
+//                 채우기 할 색상을 정함
